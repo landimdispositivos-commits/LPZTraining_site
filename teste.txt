@@ -1,0 +1,2 @@
+Este é um arquivo de teste para verificar o hook de auto-save no GitHub.
+Criado em: 2026-07-20
