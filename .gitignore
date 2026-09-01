@@ -17,6 +17,7 @@ Thumbs.db
 # Next.js
 .next/
 next-env.d.ts
+*.tsbuildinfo
 
 # Uploads locais (fotos) — nunca versionar mídia enviada por usuários
 /uploads/
