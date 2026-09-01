@@ -132,7 +132,7 @@ export default async function Home() {
           <div className="mx-auto max-w-md text-center">
             <h2 className="text-2xl font-bold text-brand-orange-700">Ingressos</h2>
             {loteAtivo ? (
-              <div className="mt-6 rounded-lg border border-brand-orange-200 p-6">
+              <div className="mt-6 rounded-lg border border-brand-orange-100 p-6">
                 <p className="text-sm font-medium text-brand-green-700">{loteAtivo.nome}</p>
                 <p className="mt-1 text-3xl font-extrabold">
                   {formatarPreco(loteAtivo.precoCentavos)}
