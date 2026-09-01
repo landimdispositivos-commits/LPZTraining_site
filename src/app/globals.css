@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+@theme {
+  /* Paleta laranja/verde suave do LPZ — valores provisórios, a validar com
+     o time de design (contraste AA precisa ser confirmado antes do launch). */
+  --color-brand-orange-50: #fff4ea;
+  --color-brand-orange-100: #ffe4c7;
+  --color-brand-orange-500: #f2994a;
+  --color-brand-orange-600: #d9791f;
+  --color-brand-orange-700: #b35e14;
+
+  --color-brand-green-50: #f1faf4;
+  --color-brand-green-100: #d9f0e1;
+  --color-brand-green-500: #4fae76;
+  --color-brand-green-600: #3a8f5d;
+  --color-brand-green-700: #2c6f47;
+
+  --color-brand-ink: #2b241f;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--color-brand-orange-50);
+  color: var(--color-brand-ink);
+  font-family: var(--font-sans);
+}
