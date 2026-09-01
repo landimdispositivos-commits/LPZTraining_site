@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lpz
+      POSTGRES_PASSWORD: lpz_dev_local
+      POSTGRES_DB: lpz_training
+    ports:
+      - "5432:5432"
+    volumes:
+      - lpz_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lpz -d lpz_training"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025" # UI web para ver e-mails capturados
+      - "1025:1025" # SMTP
+
+  # Serviço opcional: reproduz a topologia completa (app + db) em container,
+  # útil antes de subir para a VPS. No dia a dia, rodar `npm run dev` no host
+  # (com `docker compose up db mailpit`) costuma ser mais rápido no Windows.
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://lpz:lpz_dev_local@db:5432/lpz_training
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - lpz_app_node_modules:/app/node_modules
+      - lpz_app_next_cache:/app/.next
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  lpz_db_data:
+  lpz_app_node_modules:
+  lpz_app_next_cache:
