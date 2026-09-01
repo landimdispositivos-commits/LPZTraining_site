@@ -1,0 +1,16 @@
+FROM node:24-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+
+# Bind mounts no Windows/Docker Desktop nem sempre disparam eventos de
+# filesystem nativos — polling garante hot reload confiável.
+ENV WATCHPACK_POLLING=true
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
