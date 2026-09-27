@@ -1,4 +1,5 @@
 import { asc, eq } from "drizzle-orm";
+import Image from "next/image";
 import Link from "next/link";
 import { db } from "@/db";
 import { cronogramaItens, lotes, professores } from "@/db/schema";
@@ -80,9 +81,18 @@ export default async function Home() {
           <LinhasDecorativas />
           <div className="relative mx-auto max-w-3xl">
             <h1 className="flex flex-col items-center">
-              <span className="text-gold-metal text-7xl font-extrabold italic leading-none drop-shadow-[0_4px_24px_rgb(230_181_74/0.35)] sm:text-9xl">
-                LPZ
-              </span>
+              {/* Logo oficial (recortado do arquivo enviado pela organização,
+                  fundo removido). O texto "Training" segue como texto real. */}
+              <Image
+                src="/logo-lpz.png"
+                alt="LPZ"
+                width={710}
+                height={548}
+                loading="eager"
+                fetchPriority="high"
+                sizes="(min-width: 640px) 288px, 192px"
+                className="h-auto w-48 drop-shadow-[0_4px_24px_rgb(230_181_74/0.35)] sm:w-72"
+              />
               <span className="mt-4 font-display text-lg uppercase tracking-[0.6em] text-white sm:text-2xl">
                 Training
               </span>
@@ -92,12 +102,12 @@ export default async function Home() {
               tem como foco uma linha de{" "}
               <strong className="font-semibold text-white">treinamento e prática continuada</strong>.
             </p>
-            <a
-              href="#ingressos"
+            <Link
+              href="/quem-somos"
               className="bg-gold-metal mt-10 inline-block rounded-full px-8 py-3 font-semibold text-gold-ink shadow-[0_0_30px_rgb(230_181_74/0.35)] transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-300"
             >
-              Ver ingressos
-            </a>
+              Quem somos
+            </Link>
           </div>
         </section>
 
