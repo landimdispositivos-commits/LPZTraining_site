@@ -1,6 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { cronogramaItens, lotes, professores } from "@/db/schema";
+import { SiteHeader } from "./_components/site-header";
 
 // Conteúdo vem do admin e o volume de acesso é baixo — renderizar por
 // requisição evita ter que acessar o banco durante `next build`.
@@ -71,21 +72,7 @@ export default async function Home() {
         Pular para o conteúdo
       </a>
 
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-petrol-950/85 backdrop-blur">
-        <nav
-          aria-label="Navegação principal"
-          className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4"
-        >
-          <span className="font-display text-sm tracking-[0.25em] text-gold-metal">
-            LPZ TRAINING
-          </span>
-          <ul className="hidden gap-6 text-sm font-medium sm:flex">
-            <li><a href="#cronograma" className="text-mist/80 hover:text-gold-300">Cronograma</a></li>
-            <li><a href="#professores" className="text-mist/80 hover:text-gold-300">Professores</a></li>
-            <li><a href="#ingressos" className="text-mist/80 hover:text-gold-300">Ingressos</a></li>
-          </ul>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main id="conteudo">
         <section className="bg-city-glow relative overflow-hidden px-4 py-24 text-center sm:py-32">
