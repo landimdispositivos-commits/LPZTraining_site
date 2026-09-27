@@ -44,9 +44,16 @@ export function SiteHeader() {
 
         {/* Menu mobile sem JavaScript: <details> abre/fecha nativamente. */}
         <details className="group relative lg:hidden">
-          <summary className="cursor-pointer list-none rounded-full border border-gold-500/50 px-4 py-1.5 text-sm font-medium text-gold-300 [&::-webkit-details-marker]:hidden">
-            <span className="group-open:hidden">Menu</span>
-            <span className="hidden group-open:inline">Fechar</span>
+          {/* Ícone hambúrguer; vira "X" quando aberto. Área de toque de 44px. */}
+          <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-lg text-gold-300 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-300 [&::-webkit-details-marker]:hidden">
+            <span className="sr-only group-open:hidden">Abrir menu</span>
+            <span className="sr-only hidden group-open:inline">Fechar menu</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6 group-open:hidden" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="hidden h-6 w-6 group-open:block" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
           </summary>
           <div className="absolute right-0 mt-3 w-56 rounded-lg border border-white/10 bg-petrol-950 p-2 shadow-xl">
             <ul className="text-sm font-medium">

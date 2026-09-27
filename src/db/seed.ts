@@ -67,10 +67,8 @@ async function main() {
     },
   ]);
 
-  await db.insert(schema.adminUsuarios).values([
-    { nome: "Organizador Exemplo", email: "organizador@exemplo.com", papel: "organizador" },
-    { nome: "Portaria Exemplo", email: "portaria@exemplo.com", papel: "portaria" },
-  ]);
+  // Administradores não entram no seed: precisam de senha e duas etapas.
+  // Crie com: npm run admin:convidar -- --nome "..." --email ... --papel organizador
 
   console.log("Seed concluído.");
   await pool.end();

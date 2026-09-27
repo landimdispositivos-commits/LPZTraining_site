@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/modules/auth/auth";
+import { areaDoPapel } from "@/modules/auth/papeis";
 import { SiteHeader } from "../../_components/site-header";
 import { BotaoSair } from "../../_components/botao-sair";
 
@@ -20,7 +21,7 @@ export default async function Page(props: PageProps<"/congressistas/minha-area">
   if (!sessao) redirect(error ? "/congressistas?erro=link" : "/congressistas");
 
   const { user } = sessao;
-  if (user.papel === "profissional") redirect("/profissionais/minha-area");
+  if (user.papel !== "congressista") redirect(areaDoPapel(user.papel));
 
   const dados = [
     { rotulo: "Nome", valor: user.name },

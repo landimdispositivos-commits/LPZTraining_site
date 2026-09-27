@@ -40,6 +40,12 @@ export function FormEntrar({
       setEnviando(false);
       return;
     }
+    // Conta com duas etapas (administrador): o login é pela área própria.
+    if (data && "twoFactorRedirect" in data) {
+      setErro("Esta conta usa verificação em duas etapas. Entre pela área de Administradores.");
+      setEnviando(false);
+      return;
+    }
     if (papelExigido && data?.user.papel !== papelExigido) {
       await authClient.signOut();
       setErro(msgPapelRecusado ?? "Acesso restrito.");

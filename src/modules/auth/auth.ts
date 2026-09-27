@@ -2,9 +2,10 @@ import { betterAuth } from "better-auth";
 import { APIError } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { twoFactor } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { contas, sessoes, usuarios, verificacoes } from "@/db/schema";
+import { contas, duasEtapas, sessoes, usuarios, verificacoes } from "@/db/schema";
 import { emailComLink, enviarEmailEmSegundoPlano } from "@/modules/email";
 import { dadosCongressistaSchema, SENHA_MAX, SENHA_MIN } from "./cadastro";
 
@@ -29,7 +30,13 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
     // Modelos do Better Auth → tabelas em português.
-    schema: { user: usuarios, session: sessoes, account: contas, verification: verificacoes },
+    schema: {
+      user: usuarios,
+      session: sessoes,
+      account: contas,
+      verification: verificacoes,
+      twoFactor: duasEtapas,
+    },
   }),
 
   user: {
@@ -159,10 +166,21 @@ export const auth = betterAuth({
       "/sign-up/email": { window: 60, max: 3 },
       "/request-password-reset": { window: 60, max: 3 },
       "/send-verification-email": { window: 60, max: 3 },
+      "/two-factor/verify-totp": { window: 60, max: 5 },
+      "/two-factor/verify-backup-code": { window: 60, max: 5 },
+      "/two-factor/enable": { window: 60, max: 5 },
     },
   },
 
-  plugins: [nextCookies()],
+  plugins: [
+    // Duas etapas por app autenticador (TOTP). Obrigatória para administradores
+    // — a exigência é aplicada nas páginas/ações de /administradores.
+    twoFactor({
+      issuer: "LPZ Training",
+      accountLockout: { enabled: true, maxFailedAttempts: 5, durationSeconds: 15 * 60 },
+    }),
+    nextCookies(), // precisa ser o último plugin
+  ],
 });
 
 export type Sessao = typeof auth.$Infer.Session;
