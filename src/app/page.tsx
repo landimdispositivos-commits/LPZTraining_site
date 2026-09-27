@@ -86,8 +86,7 @@ export default async function Home() {
                 Training
               </span>
             </h1>
-            <p className="mt-10 font-script text-4xl text-white sm:text-5xl">de cara nova</p>
-            <p className="mx-auto mt-4 max-w-xl text-base text-mist/90 sm:text-lg">
+            <p className="mx-auto mt-10 max-w-xl text-base text-mist/90 sm:text-lg">
               É um <strong className="font-semibold text-white">congresso de zouk</strong> que
               tem como foco uma linha de{" "}
               <strong className="font-semibold text-white">treinamento e prática continuada</strong>.
