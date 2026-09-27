@@ -30,6 +30,69 @@ export const adminUsuarios = pgTable("admin_usuarios", {
 }));
 
 // ---------------------------------------------------------------------------
+// Login de congressistas (Better Auth)
+//
+// As chaves JS seguem os nomes de campo que o Better Auth espera (ex:
+// `emailVerified`); só os nomes de tabela/coluna no banco são em português.
+// O mapeamento modelo → tabela fica em src/modules/auth/auth.ts.
+// ---------------------------------------------------------------------------
+
+export const usuarios = pgTable("usuarios", {
+  id: text("id").primaryKey(),
+  name: text("nome").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verificado").notNull().default(false),
+  image: text("imagem"),
+  // Dados do cadastro de congressista. CPF é exigido pelo Mercado Pago no
+  // pagamento; guardado só com dígitos.
+  celular: text("celular").notNull(),
+  cpf: text("cpf").notNull().unique(),
+  pais: text("pais").notNull(),
+  uf: text("uf"),
+  // Momento em que o titular aceitou a Política de Privacidade (LGPD).
+  privacidadeAceitaEm: timestamp("privacidade_aceita_em", { withTimezone: true }).notNull(),
+  createdAt: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const sessoes = pgTable("sessoes", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expira_em", { withTimezone: true }).notNull(),
+  token: text("token").notNull().unique(),
+  createdAt: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+  ipAddress: text("ip"),
+  userAgent: text("user_agent"),
+  userId: text("usuario_id").notNull().references(() => usuarios.id, { onDelete: "cascade" }),
+});
+
+export const contas = pgTable("contas", {
+  id: text("id").primaryKey(),
+  accountId: text("conta_id").notNull(),
+  providerId: text("provedor_id").notNull(),
+  userId: text("usuario_id").notNull().references(() => usuarios.id, { onDelete: "cascade" }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expira_em", { withTimezone: true }),
+  refreshTokenExpiresAt: timestamp("refresh_token_expira_em", { withTimezone: true }),
+  scope: text("scope"),
+  // Hash da senha (scrypt, gerado pelo Better Auth) — nunca a senha em si.
+  password: text("senha_hash"),
+  createdAt: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const verificacoes = pgTable("verificacoes", {
+  id: text("id").primaryKey(),
+  identifier: text("identificador").notNull(),
+  value: text("valor").notNull(),
+  expiresAt: timestamp("expira_em", { withTimezone: true }).notNull(),
+  createdAt: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // Conteúdo público: professores e cronograma
 // ---------------------------------------------------------------------------
 
