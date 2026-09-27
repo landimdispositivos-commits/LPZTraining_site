@@ -15,6 +15,13 @@ if (!process.env.BETTER_AUTH_SECRET) {
 const MSG_CADASTRO_RECUSADO =
   "Não foi possível concluir o cadastro com esses dados. Se você já tem conta, entre ou recupere a senha.";
 
+// Código próprio: o formulário mostra a mensagem (já em português) ao usuário.
+export const CODIGO_VALIDACAO = "LPZ_VALIDACAO";
+
+function erroValidacao({ message }: { message: string }) {
+  return new APIError("BAD_REQUEST", { message, code: CODIGO_VALIDACAO });
+}
+
 export const auth = betterAuth({
   baseURL: process.env.APP_URL,
   secret: process.env.BETTER_AUTH_SECRET,
@@ -87,19 +94,19 @@ export const auth = betterAuth({
         before: async (user, ctx) => {
           const body = (ctx?.body ?? {}) as Record<string, unknown>;
           if (body.aceitePrivacidade !== true) {
-            throw new APIError("BAD_REQUEST", {
+            throw erroValidacao({
               message: "É preciso aceitar a Política de Privacidade para criar a conta.",
             });
           }
 
           const nome = String(user.name ?? "").trim();
           if (nome.length < 2 || nome.length > 100) {
-            throw new APIError("BAD_REQUEST", { message: "Informe seu nome completo." });
+            throw erroValidacao({ message: "Informe seu nome completo." });
           }
 
           const dados = dadosCongressistaSchema.safeParse(user);
           if (!dados.success) {
-            throw new APIError("BAD_REQUEST", { message: dados.error.issues[0].message });
+            throw erroValidacao({ message: dados.error.issues[0].message });
           }
 
           if (dados.data.cpf) {
@@ -109,7 +116,7 @@ export const auth = betterAuth({
               .where(eq(usuarios.cpf, dados.data.cpf))
               .limit(1);
             if (existente.length > 0) {
-              throw new APIError("BAD_REQUEST", { message: MSG_CADASTRO_RECUSADO });
+              throw erroValidacao({ message: MSG_CADASTRO_RECUSADO });
             }
           }
 

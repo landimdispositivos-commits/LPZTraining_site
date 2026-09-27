@@ -63,9 +63,9 @@ export function traduzirErro(erro: { code?: string; status?: number; message?: s
       return "E-mail inválido.";
     case "INVALID_TOKEN":
       return "Link inválido ou expirado. Peça um novo.";
+    // Validações do nosso hook no servidor — mensagem já em português.
+    case "LPZ_VALIDACAO":
+      if (erro.message) return erro.message;
   }
-  // Mensagens em português vêm das nossas validações no servidor.
-  return erro.message && /[áéíóúãõçê]|\b(de|o|a|para)\b/i.test(erro.message)
-    ? erro.message
-    : "Algo deu errado. Tente novamente.";
+  return "Algo deu errado. Tente novamente.";
 }
