@@ -37,7 +37,7 @@ function LinhasDecorativas() {
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 h-full w-full opacity-40"
+      className="pointer-events-none absolute inset-0 h-full w-full opacity-20 sm:opacity-40"
       viewBox="0 0 400 800"
       preserveAspectRatio="none"
       fill="none"
