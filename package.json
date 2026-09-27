@@ -11,7 +11,8 @@
     "db:migrate": "tsx --env-file=.env src/db/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx --env-file=.env src/db/seed.ts",
-    "profissional:convidar": "tsx --env-file=.env scripts/convidar-profissional.ts"
+    "profissional:convidar": "tsx --env-file=.env scripts/convidar.ts --papel profissional",
+    "admin:convidar": "tsx --env-file=.env scripts/convidar.ts"
   },
   "dependencies": {
     "better-auth": "^1.7.6",
@@ -21,6 +22,7 @@
     "pg": "8.23.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-qr-code": "^2.2.0",
     "zod": "4.5.4"
   },
   "devDependencies": {

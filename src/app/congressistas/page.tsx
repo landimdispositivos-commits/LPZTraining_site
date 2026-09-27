@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/modules/auth/auth";
+import { areaDoPapel } from "@/modules/auth/papeis";
 import { SiteHeader } from "../_components/site-header";
 import { AcessoCongressista } from "./_components/acesso-congressista";
 
@@ -14,7 +15,7 @@ const AVISOS: Record<string, string> = {
 export default async function Page(props: PageProps<"/congressistas">) {
   const sessao = await auth.api.getSession({ headers: await headers() });
   if (sessao) {
-    redirect(sessao.user.papel === "profissional" ? "/profissionais/minha-area" : "/congressistas/minha-area");
+    redirect(areaDoPapel(sessao.user.papel));
   }
 
   const { erro } = await props.searchParams;

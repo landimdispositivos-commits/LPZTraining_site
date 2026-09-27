@@ -10,36 +10,24 @@ import {
 } from "drizzle-orm/pg-core";
 
 // ---------------------------------------------------------------------------
-// Admin / RBAC
-// ---------------------------------------------------------------------------
-
-export const papelAdminEnum = pgEnum("papel_admin", [
-  "organizador",
-  "professor",
-  "portaria",
-]);
-
-export const adminUsuarios = pgTable("admin_usuarios", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  nome: text("nome").notNull(),
-  email: text("email").notNull(),
-  papel: papelAdminEnum("papel").notNull(),
-  criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
-}, (t) => ({
-  emailUnico: uniqueIndex("admin_usuarios_email_unico").on(t.email),
-}));
-
-// ---------------------------------------------------------------------------
-// Login de congressistas (Better Auth)
+// Login (Better Auth) — congressistas, profissionais e administradores
 //
 // As chaves JS seguem os nomes de campo que o Better Auth espera (ex:
 // `emailVerified`); só os nomes de tabela/coluna no banco são em português.
 // O mapeamento modelo → tabela fica em src/modules/auth/auth.ts.
 // ---------------------------------------------------------------------------
 
-// Cadastro público sempre cria "congressista"; "profissional" (professor/DJ)
-// só nasce por convite da organização (scripts/convidar-profissional.ts).
-export const papelUsuarioEnum = pgEnum("papel_usuario", ["congressista", "profissional"]);
+// Cadastro público sempre cria "congressista". Os demais papéis só nascem por
+// convite (src/modules/auth/convite.ts):
+// - profissional: professor/DJ
+// - organizador: administrador com acesso total (duas etapas obrigatória)
+// - portaria: administrador restrito ao check-in (duas etapas obrigatória)
+export const papelUsuarioEnum = pgEnum("papel_usuario", [
+  "congressista",
+  "profissional",
+  "organizador",
+  "portaria",
+]);
 
 export const usuarios = pgTable("usuarios", {
   id: text("id").primaryKey(),
@@ -60,6 +48,9 @@ export const usuarios = pgTable("usuarios", {
   uf: text("uf"),
   // Momento em que o titular aceitou a Política de Privacidade (LGPD).
   privacidadeAceitaEm: timestamp("privacidade_aceita_em", { withTimezone: true }),
+  // Verificação em duas etapas (app autenticador) — obrigatória para
+  // organizador e portaria; gerida pelo plugin twoFactor do Better Auth.
+  twoFactorEnabled: boolean("duas_etapas_ativa").notNull().default(false),
   createdAt: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -91,6 +82,20 @@ export const contas = pgTable("contas", {
   createdAt: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Segredo TOTP e códigos de recuperação — ambos criptografados pelo Better
+// Auth com o BETTER_AUTH_SECRET antes de chegar aqui.
+export const duasEtapas = pgTable("duas_etapas", {
+  id: text("id").primaryKey(),
+  secret: text("segredo").notNull(),
+  backupCodes: text("codigos_recuperacao").notNull(),
+  userId: text("usuario_id").notNull().references(() => usuarios.id, { onDelete: "cascade" }),
+  verified: boolean("verificado").notNull().default(true),
+  failedVerificationCount: integer("tentativas_falhas").notNull().default(0),
+  lockedUntil: timestamp("bloqueado_ate", { withTimezone: true }),
+}, (t) => ({
+  usuarioIdx: uniqueIndex("duas_etapas_usuario_unico").on(t.userId),
+}));
 
 export const verificacoes = pgTable("verificacoes", {
   id: text("id").primaryKey(),
@@ -177,7 +182,7 @@ export const ingressos = pgTable("ingressos", {
   pedidoId: uuid("pedido_id").notNull().references(() => pedidos.id, { onDelete: "restrict" }),
   status: statusIngressoEnum("status").notNull().default("valido"),
   checkinEm: timestamp("checkin_em", { withTimezone: true }),
-  checkinPor: uuid("checkin_por").references(() => adminUsuarios.id, { onDelete: "set null" }),
+  checkinPor: text("checkin_por").references(() => usuarios.id, { onDelete: "set null" }),
   criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
 });
 

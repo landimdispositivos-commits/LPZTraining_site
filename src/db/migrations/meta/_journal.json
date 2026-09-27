@@ -22,6 +22,20 @@
       "when": 1790540815418,
       "tag": "0002_login_profissionais",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790547974832,
+      "tag": "0003_administradores",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790547996693,
+      "tag": "0004_duas_etapas",
+      "breakpoints": true
     }
   ]
 }
