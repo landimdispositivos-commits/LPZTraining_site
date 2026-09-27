@@ -2,7 +2,9 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { cronogramaItens, lotes, professores } from "@/db/schema";
 
-export const revalidate = 60;
+// Conteúdo vem do admin e o volume de acesso é baixo — renderizar por
+// requisição evita ter que acessar o banco durante `next build`.
+export const dynamic = "force-dynamic";
 
 async function getDadosLanding() {
   const [cronograma, listaProfessores, loteAtivo] = await Promise.all([
