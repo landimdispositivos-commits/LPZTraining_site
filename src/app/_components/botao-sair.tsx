@@ -4,14 +4,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/modules/auth/auth-client";
 
-export function BotaoSair() {
+export function BotaoSair({ destino }: { destino: string }) {
   const router = useRouter();
   const [saindo, setSaindo] = useState(false);
 
   async function sair() {
     setSaindo(true);
     await authClient.signOut();
-    router.push("/congressistas");
+    router.push(destino);
     router.refresh();
   }
 

@@ -37,21 +37,29 @@ export const adminUsuarios = pgTable("admin_usuarios", {
 // O mapeamento modelo → tabela fica em src/modules/auth/auth.ts.
 // ---------------------------------------------------------------------------
 
+// Cadastro público sempre cria "congressista"; "profissional" (professor/DJ)
+// só nasce por convite da organização (scripts/convidar-profissional.ts).
+export const papelUsuarioEnum = pgEnum("papel_usuario", ["congressista", "profissional"]);
+
 export const usuarios = pgTable("usuarios", {
   id: text("id").primaryKey(),
   name: text("nome").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verificado").notNull().default(false),
   image: text("imagem"),
-  // Dados do cadastro de congressista. CPF é exigido pelo Mercado Pago no
-  // pagamento de brasileiros (obrigatório quando pais = Brasil); guardado só
-  // com dígitos. Estrangeiros ficam com NULL — o unique permite vários NULL.
-  celular: text("celular").notNull(),
+  papel: papelUsuarioEnum("papel").notNull().default("congressista"),
+  // Perfil público do profissional (foto, bio, aulas no cronograma).
+  professorId: uuid("professor_id").unique().references(() => professores.id, { onDelete: "set null" }),
+  // Dados do cadastro de congressista — obrigatórios para congressistas
+  // (validado no hook do Better Auth), vazios para profissionais convidados.
+  // CPF é exigido pelo Mercado Pago no pagamento de brasileiros; guardado só
+  // com dígitos. O unique permite vários NULL.
+  celular: text("celular"),
   cpf: text("cpf").unique(),
-  pais: text("pais").notNull(),
+  pais: text("pais"),
   uf: text("uf"),
   // Momento em que o titular aceitou a Política de Privacidade (LGPD).
-  privacidadeAceitaEm: timestamp("privacidade_aceita_em", { withTimezone: true }).notNull(),
+  privacidadeAceitaEm: timestamp("privacidade_aceita_em", { withTimezone: true }),
   createdAt: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("atualizado_em", { withTimezone: true }).notNull().defaultNow(),
 });

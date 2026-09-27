@@ -13,7 +13,9 @@ const AVISOS: Record<string, string> = {
 
 export default async function Page(props: PageProps<"/congressistas">) {
   const sessao = await auth.api.getSession({ headers: await headers() });
-  if (sessao) redirect("/congressistas/minha-area");
+  if (sessao) {
+    redirect(sessao.user.papel === "profissional" ? "/profissionais/minha-area" : "/congressistas/minha-area");
+  }
 
   const { erro } = await props.searchParams;
   const avisoInicial = typeof erro === "string" ? AVISOS[erro] : undefined;

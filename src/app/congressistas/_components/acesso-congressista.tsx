@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/modules/auth/auth-client";
 import {
@@ -12,7 +11,8 @@ import {
   somenteDigitos,
   UFS,
 } from "@/modules/auth/cadastro";
-import { Aviso, Campo, classeBotao, classeInput, traduzirErro } from "./ui";
+import { FormEntrar, FormEsqueci } from "../../_components/form-entrar";
+import { Aviso, Campo, classeBotao, classeInput, traduzirErro } from "../../_components/form-ui";
 
 type Aba = "entrar" | "criar" | "esqueci";
 
@@ -59,54 +59,19 @@ export function AcessoCongressista({ avisoInicial }: { avisoInicial?: string }) 
 
       <div className="mt-6 rounded-2xl border border-white/10 bg-petrol-900/80 p-6 shadow-xl backdrop-blur">
         {avisoInicial && <div className="mb-4"><Aviso tipo="erro">{avisoInicial}</Aviso></div>}
-        {aba === "entrar" && <FormEntrar onEsqueci={() => setAba("esqueci")} />}
+        {aba === "entrar" && (
+          <FormEntrar
+            destino={AREA}
+            onEsqueci={() => setAba("esqueci")}
+            painelProps={{ id: "painel-entrar", role: "tabpanel", "aria-labelledby": "aba-entrar" }}
+          />
+        )}
         {aba === "criar" && <FormCriarConta />}
-        {aba === "esqueci" && <FormEsqueci onVoltar={() => setAba("entrar")} />}
+        {aba === "esqueci" && (
+          <FormEsqueci redirectTo="/congressistas/redefinir-senha" onVoltar={() => setAba("entrar")} />
+        )}
       </div>
     </div>
-  );
-}
-
-function FormEntrar({ onEsqueci }: { onEsqueci: () => void }) {
-  const router = useRouter();
-  const [enviando, setEnviando] = useState(false);
-  const [erro, setErro] = useState<string>();
-
-  async function enviar(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    setEnviando(true);
-    setErro(undefined);
-    const { error } = await authClient.signIn.email({
-      email: String(form.get("email")),
-      password: String(form.get("senha")),
-      callbackURL: AREA,
-    });
-    if (error) {
-      setErro(traduzirErro(error));
-      setEnviando(false);
-      return;
-    }
-    router.push(AREA);
-    router.refresh();
-  }
-
-  return (
-    <form id="painel-entrar" role="tabpanel" aria-labelledby="aba-entrar" onSubmit={enviar} className="space-y-4">
-      {erro && <Aviso tipo="erro">{erro}</Aviso>}
-      <Campo id="login-email" label="E-mail">
-        <input id="login-email" name="email" type="email" autoComplete="email" required className={classeInput} />
-      </Campo>
-      <Campo id="login-senha" label="Senha">
-        <input id="login-senha" name="senha" type="password" autoComplete="current-password" required className={classeInput} />
-      </Campo>
-      <button type="submit" disabled={enviando} className={classeBotao}>
-        {enviando ? "Entrando..." : "Entrar"}
-      </button>
-      <button type="button" onClick={onEsqueci} className="block w-full text-center text-sm text-teal-300 hover:underline">
-        Esqueci minha senha
-      </button>
-    </form>
   );
 }
 
@@ -320,53 +285,5 @@ function FormCriarConta() {
         {enviando ? "Criando conta..." : "Criar conta"}
       </button>
     </form>
-  );
-}
-
-function FormEsqueci({ onVoltar }: { onVoltar: () => void }) {
-  const [enviando, setEnviando] = useState(false);
-  const [erro, setErro] = useState<string>();
-  const [enviado, setEnviado] = useState(false);
-
-  async function enviar(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    setEnviando(true);
-    setErro(undefined);
-    const { error } = await authClient.requestPasswordReset({
-      email: String(form.get("email")),
-      redirectTo: "/congressistas/redefinir-senha",
-    });
-    setEnviando(false);
-    if (error) {
-      setErro(traduzirErro(error));
-      return;
-    }
-    setEnviado(true);
-  }
-
-  return (
-    <div className="space-y-4">
-      {enviado ? (
-        // Mesma resposta exista ou não a conta — não revela quem é cadastrado.
-        <Aviso tipo="ok">
-          Se houver uma conta com esse e-mail, você vai receber um link para redefinir a senha. O link vale por 1 hora.
-        </Aviso>
-      ) : (
-        <form onSubmit={enviar} className="space-y-4">
-          <p className="text-sm text-mist/80">Informe o e-mail da sua conta e enviaremos um link para criar uma nova senha.</p>
-          {erro && <Aviso tipo="erro">{erro}</Aviso>}
-          <Campo id="esqueci-email" label="E-mail">
-            <input id="esqueci-email" name="email" type="email" autoComplete="email" required className={classeInput} />
-          </Campo>
-          <button type="submit" disabled={enviando} className={classeBotao}>
-            {enviando ? "Enviando..." : "Enviar link"}
-          </button>
-        </form>
-      )}
-      <button type="button" onClick={onVoltar} className="block w-full text-center text-sm text-teal-300 hover:underline">
-        Voltar para entrar
-      </button>
-    </div>
   );
 }

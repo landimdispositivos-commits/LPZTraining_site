@@ -74,9 +74,16 @@ diretrizes de segurança e conformidade abaixo não são opcionais.
   alternativa antes de implementar (breve, mas explícito).
 - Priorizar soluções simples e testadas em produção por outras empresas em
   vez de tecnologia experimental, a menos que haja um motivo concreto.
-- Manter o código responsivo e acessível (o site já usa paleta laranja/verde
-  suave e deve funcionar bem em mobile, já que boa parte da venda de
-  ingresso tende a vir do celular).
+- Manter o código responsivo e acessível: deve funcionar bem em mobile, já
+  que boa parte da venda de ingresso tende a vir do celular.
+- Identidade visual "LPZ 2027" (tokens em `src/app/globals.css`): fundo
+  azul-petróleo escuro (`petrol-*`), dourado metálico do logo (`gold-*`,
+  classes `text-gold-metal`/`bg-gold-metal`), verde-água (`teal-*`) e
+  brilho laranja (`ember-*`); texto claro `mist`. Fontes via `next/font`:
+  Poppins (texto), Michroma (títulos, caixa alta espaçada) e Mrs Saint
+  Delafield (cursiva, só como detalhe). Usar os tokens em vez de cores
+  soltas e manter contraste AA (texto claro sobre petróleo, texto escuro
+  `gold-ink` sobre dourado).
 
 ## 5. Custo baixo
 

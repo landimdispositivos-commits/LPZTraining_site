@@ -3,22 +3,41 @@ import nodemailer from "nodemailer";
 // SMTP genérico: em dev aponta para o Mailpit (captura tudo em
 // http://localhost:8025, nada sai para a internet); em produção, para o
 // provedor de e-mail transacional escolhido.
+const porta = Number(process.env.SMTP_PORT || 1025);
+
 const transporte = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT ?? 1025),
-  secure: Number(process.env.SMTP_PORT) === 465,
+  port: porta,
+  secure: porta === 465,
+  // 587 (Brevo e similares): exige STARTTLS — nunca manda credencial em texto puro.
+  requireTLS: porta === 587,
   auth: process.env.SMTP_USER
     ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
     : undefined,
 });
 
-export async function enviarEmail(msg: { para: string; assunto: string; texto: string; html: string }) {
+type Mensagem = { para: string; assunto: string; texto: string; html: string };
+
+// Lança erro se o envio falhar — use quando quem chama precisa saber (ex:
+// script de convite). Em callbacks de requisição, use enviarEmailEmSegundoPlano.
+export async function enviarEmail(msg: Mensagem) {
+  if (!process.env.SMTP_HOST) {
+    throw new Error("SMTP_HOST não configurado — e-mail não enviado.");
+  }
   await transporte.sendMail({
     from: process.env.EMAIL_FROM,
     to: msg.para,
     subject: msg.assunto,
     text: msg.texto,
     html: msg.html,
+  });
+}
+
+// Não bloqueia a resposta nem derruba o processo se o SMTP falhar: só
+// registra. O log não inclui o destinatário (dado pessoal).
+export function enviarEmailEmSegundoPlano(msg: Mensagem) {
+  enviarEmail(msg).catch((erro: unknown) => {
+    console.error(`[email] Falha ao enviar "${msg.assunto}":`, erro instanceof Error ? erro.message : erro);
   });
 }
 

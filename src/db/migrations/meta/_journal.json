@@ -15,6 +15,13 @@
       "when": 1790539343325,
       "tag": "0001_login_congressistas",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790540815418,
+      "tag": "0002_login_profissionais",
+      "breakpoints": true
     }
   ]
 }

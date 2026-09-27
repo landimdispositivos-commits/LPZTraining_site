@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/modules/auth/auth";
 import { SiteHeader } from "../../_components/site-header";
-import { BotaoSair } from "../_components/botao-sair";
+import { BotaoSair } from "../../_components/botao-sair";
 
 export const metadata: Metadata = { title: "Minha área — LPZ Training" };
 
@@ -20,11 +20,13 @@ export default async function Page(props: PageProps<"/congressistas/minha-area">
   if (!sessao) redirect(error ? "/congressistas?erro=link" : "/congressistas");
 
   const { user } = sessao;
+  if (user.papel === "profissional") redirect("/profissionais/minha-area");
+
   const dados = [
     { rotulo: "Nome", valor: user.name },
     { rotulo: "E-mail", valor: user.email },
-    { rotulo: "Celular", valor: user.celular },
-    { rotulo: "País", valor: user.uf ? `${user.pais} — ${user.uf}` : user.pais },
+    { rotulo: "Celular", valor: user.celular ?? "—" },
+    { rotulo: "País", valor: user.uf ? `${user.pais} — ${user.uf}` : (user.pais ?? "—") },
     ...(user.cpf ? [{ rotulo: "CPF", valor: mascararCpf(user.cpf) }] : []),
   ];
 
@@ -61,7 +63,7 @@ export default async function Page(props: PageProps<"/congressistas/minha-area">
           </section>
 
           <div className="mt-8">
-            <BotaoSair />
+            <BotaoSair destino="/congressistas" />
           </div>
         </div>
       </main>

@@ -5,7 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { contas, sessoes, usuarios, verificacoes } from "@/db/schema";
-import { emailComLink, enviarEmail } from "@/modules/email";
+import { emailComLink, enviarEmailEmSegundoPlano } from "@/modules/email";
 import { dadosCongressistaSchema, SENHA_MAX, SENHA_MIN } from "./cadastro";
 
 if (!process.env.BETTER_AUTH_SECRET) {
@@ -38,8 +38,10 @@ export const auth = betterAuth({
       cpf: { type: "string", required: false },
       pais: { type: "string", required: true },
       uf: { type: "string", required: false },
-      // Preenchido pelo servidor no hook abaixo, nunca pelo cliente.
+      // Campos abaixo: só o servidor define, nunca o cliente (input: false).
       privacidadeAceitaEm: { type: "date", required: false, input: false },
+      papel: { type: "string", required: false, input: false, defaultValue: "congressista" },
+      professorId: { type: "string", required: false, input: false },
     },
   },
 
@@ -57,7 +59,7 @@ export const auth = betterAuth({
         textoBotao: "Redefinir senha",
         url,
       });
-      void enviarEmail({ para: user.email, assunto: "Redefinir senha — LPZ Training", texto, html });
+      enviarEmailEmSegundoPlano({ para: user.email, assunto: "Redefinir senha — LPZ Training", texto, html });
     },
     // Cadastro com e-mail já existente responde "sucesso" (não revela quem
     // tem conta); o dono do e-mail é avisado por aqui.
@@ -68,7 +70,7 @@ export const auth = betterAuth({
         textoBotao: "Entrar ou recuperar senha",
         url: `${process.env.APP_URL}/congressistas`,
       });
-      void enviarEmail({ para: user.email, assunto: "Você já tem conta — LPZ Training", texto, html });
+      enviarEmailEmSegundoPlano({ para: user.email, assunto: "Você já tem conta — LPZ Training", texto, html });
     },
   },
 
@@ -84,7 +86,7 @@ export const auth = betterAuth({
         textoBotao: "Confirmar e-mail",
         url,
       });
-      void enviarEmail({ para: user.email, assunto: "Confirme seu e-mail — LPZ Training", texto, html });
+      enviarEmailEmSegundoPlano({ para: user.email, assunto: "Confirme seu e-mail — LPZ Training", texto, html });
     },
   },
 
@@ -92,7 +94,16 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user, ctx) => {
-          const body = (ctx?.body ?? {}) as Record<string, unknown>;
+          // Sem contexto de requisição = código do próprio servidor (ex: script
+          // de convite de profissional), que já monta os dados certos.
+          if (!ctx) return { data: user };
+
+          // Por HTTP, a única criação de usuário permitida é o cadastro público.
+          if (ctx.path !== "/sign-up/email") {
+            throw erroValidacao({ message: "Operação não permitida." });
+          }
+
+          const body = (ctx.body ?? {}) as Record<string, unknown>;
           if (body.aceitePrivacidade !== true) {
             throw erroValidacao({
               message: "É preciso aceitar a Política de Privacidade para criar a conta.",
@@ -121,7 +132,14 @@ export const auth = betterAuth({
           }
 
           return {
-            data: { ...user, name: nome, ...dados.data, privacidadeAceitaEm: new Date() },
+            data: {
+              ...user,
+              name: nome,
+              ...dados.data,
+              privacidadeAceitaEm: new Date(),
+              papel: "congressista",
+              professorId: null,
+            },
           };
         },
       },

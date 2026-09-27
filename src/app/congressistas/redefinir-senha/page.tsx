@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "../../_components/site-header";
-import { FormRedefinirSenha } from "./form-redefinir-senha";
+import { FormRedefinirSenha } from "../../_components/form-redefinir-senha";
 
 export const metadata: Metadata = { title: "Redefinir senha — LPZ Training" };
 
@@ -18,6 +18,7 @@ export default async function Page(props: PageProps<"/congressistas/redefinir-se
           <div className="mt-8 rounded-2xl border border-white/10 bg-petrol-900/80 p-6">
             <FormRedefinirSenha
               token={typeof token === "string" && !error ? token : undefined}
+              urlEntrar="/congressistas"
             />
           </div>
         </div>

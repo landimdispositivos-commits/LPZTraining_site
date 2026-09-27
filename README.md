@@ -13,7 +13,7 @@ regem este projeto.
   projeto (monólito modular).
 - **PostgreSQL + Drizzle ORM** — banco relacional, migrations versionadas em
   `src/db/migrations/`.
-- **Tailwind CSS v4** — estilos, tokens de marca (laranja/verde) em
+- **Tailwind CSS v4** — estilos, tokens da identidade visual (petróleo/dourado/verde-água/laranja) em
   `src/app/globals.css`.
 - **Mercado Pago (Checkout Pro)** — pagamento (ainda não implementado; ver
   `src/modules/pagamentos`, hoje só com o `FakePaymentProvider` de dev).

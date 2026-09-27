@@ -11,7 +11,9 @@ COPY . .
 # presença da variável); a conexão real só é aberta em runtime, com o valor
 # vindo do .env de produção.
 ENV DATABASE_URL="postgres://build:build@localhost:5432/build"
-RUN npm run build
+# Idem para o segredo do login (src/modules/auth/auth.ts). Passado só para
+# este RUN — não fica gravado na imagem; em runtime vem do .env.
+RUN BETTER_AUTH_SECRET="somente-para-o-build" npm run build
 
 ENV NODE_ENV=production
 EXPOSE 3000
