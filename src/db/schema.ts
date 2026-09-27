@@ -44,9 +44,10 @@ export const usuarios = pgTable("usuarios", {
   emailVerified: boolean("email_verificado").notNull().default(false),
   image: text("imagem"),
   // Dados do cadastro de congressista. CPF é exigido pelo Mercado Pago no
-  // pagamento; guardado só com dígitos.
+  // pagamento de brasileiros (obrigatório quando pais = Brasil); guardado só
+  // com dígitos. Estrangeiros ficam com NULL — o unique permite vários NULL.
   celular: text("celular").notNull(),
-  cpf: text("cpf").notNull().unique(),
+  cpf: text("cpf").unique(),
   pais: text("pais").notNull(),
   uf: text("uf"),
   // Momento em que o titular aceitou a Política de Privacidade (LGPD).
