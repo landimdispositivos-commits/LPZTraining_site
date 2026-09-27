@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 // Links de seção da landing usam "/#..." para funcionar também a partir das
 // páginas internas.
 const linksSecoes = [
@@ -22,20 +24,20 @@ export function SiteHeader() {
         aria-label="Navegação principal"
         className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4"
       >
-        <a href="/" className="font-display text-sm tracking-[0.25em] text-gold-metal">
+        <Link href="/" className="font-display text-sm tracking-[0.25em] text-gold-metal">
           LPZ TRAINING
-        </a>
+        </Link>
 
         <ul className="hidden items-center gap-5 text-sm font-medium lg:flex">
           {linksSecoes.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className={classeLink}>{link.label}</a>
+              <Link href={link.href} className={classeLink}>{link.label}</Link>
             </li>
           ))}
           <li aria-hidden="true" className="h-4 w-px bg-white/20" />
           {linksAreas.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className={classeLink}>{link.label}</a>
+              <Link href={link.href} className={classeLink}>{link.label}</Link>
             </li>
           ))}
         </ul>
@@ -50,9 +52,9 @@ export function SiteHeader() {
             <ul className="text-sm font-medium">
               {linksSecoes.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className={`block rounded px-3 py-2.5 hover:bg-petrol-800 ${classeLink}`}>
+                  <Link href={link.href} className={`block rounded px-3 py-2.5 hover:bg-petrol-800 ${classeLink}`}>
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -60,9 +62,9 @@ export function SiteHeader() {
             <ul className="text-sm font-medium">
               {linksAreas.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className={`block rounded px-3 py-2.5 hover:bg-petrol-800 ${classeLink}`}>
+                  <Link href={link.href} className={`block rounded px-3 py-2.5 hover:bg-petrol-800 ${classeLink}`}>
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

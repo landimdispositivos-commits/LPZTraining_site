@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteHeader } from "./site-header";
 
 // Placeholder das áreas restritas. Quando forem implementadas, cada rota
@@ -13,12 +14,12 @@ export function AreaEmBreve({ titulo, descricao }: { titulo: string; descricao: 
           </h1>
           <p className="mt-6 text-mist/90">{descricao}</p>
           <p className="mt-8 font-script text-4xl text-white">em breve</p>
-          <a
+          <Link
             href="/"
             className="mt-10 inline-block rounded-full border border-gold-500/60 px-6 py-2.5 text-sm font-semibold text-gold-300 hover:bg-gold-500/10"
           >
             Voltar para o início
-          </a>
+          </Link>
         </div>
       </main>
     </>
