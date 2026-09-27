@@ -4,9 +4,18 @@ import Link from "next/link";
 import { useState } from "react";
 import { authClient } from "@/modules/auth/auth-client";
 import { SENHA_MAX, SENHA_MIN } from "@/modules/auth/cadastro";
-import { Aviso, Campo, classeBotao, classeInput, traduzirErro } from "../_components/ui";
+import { Aviso, Campo, classeBotao, classeInput, traduzirErro } from "./form-ui";
 
-export function FormRedefinirSenha({ token }: { token?: string }) {
+// modo "definir": primeira senha de profissional convidado; "redefinir": esqueci a senha.
+export function FormRedefinirSenha({
+  token,
+  urlEntrar,
+  modo = "redefinir",
+}: {
+  token?: string;
+  urlEntrar: string;
+  modo?: "definir" | "redefinir";
+}) {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string>();
   const [pronto, setPronto] = useState(false);
@@ -14,8 +23,12 @@ export function FormRedefinirSenha({ token }: { token?: string }) {
   if (!token) {
     return (
       <div className="space-y-4 text-center">
-        <Aviso tipo="erro">Link inválido ou expirado. Peça um novo em &quot;Esqueci minha senha&quot;.</Aviso>
-        <Link href="/congressistas" className="text-sm text-teal-300 hover:underline">Voltar para entrar</Link>
+        <Aviso tipo="erro">
+          {modo === "definir"
+            ? "Link de convite inválido ou expirado. Peça um novo convite à organização."
+            : "Link inválido ou expirado. Peça um novo em “Esqueci minha senha”."}
+        </Aviso>
+        <Link href={urlEntrar} className="text-sm text-teal-300 hover:underline">Voltar para entrar</Link>
       </div>
     );
   }
@@ -23,8 +36,12 @@ export function FormRedefinirSenha({ token }: { token?: string }) {
   if (pronto) {
     return (
       <div className="space-y-4 text-center">
-        <Aviso tipo="ok">Senha alterada. Por segurança, você foi desconectado de todos os aparelhos.</Aviso>
-        <Link href="/congressistas" className={`${classeBotao} inline-block`}>Entrar</Link>
+        <Aviso tipo="ok">
+          {modo === "definir"
+            ? "Senha definida! Agora é só entrar com seu e-mail e a nova senha."
+            : "Senha alterada. Por segurança, você foi desconectado de todos os aparelhos."}
+        </Aviso>
+        <Link href={urlEntrar} className={`${classeBotao} inline-block`}>Entrar</Link>
       </div>
     );
   }
@@ -54,7 +71,7 @@ export function FormRedefinirSenha({ token }: { token?: string }) {
         <input id="nova-confirmacao" name="confirmacao" type="password" autoComplete="new-password" maxLength={SENHA_MAX} required className={classeInput} />
       </Campo>
       <button type="submit" disabled={enviando} className={classeBotao}>
-        {enviando ? "Salvando..." : "Salvar nova senha"}
+        {enviando ? "Salvando..." : modo === "definir" ? "Definir senha" : "Salvar nova senha"}
       </button>
     </form>
   );

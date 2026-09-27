@@ -38,8 +38,10 @@ export const auth = betterAuth({
       cpf: { type: "string", required: false },
       pais: { type: "string", required: true },
       uf: { type: "string", required: false },
-      // Preenchido pelo servidor no hook abaixo, nunca pelo cliente.
+      // Campos abaixo: só o servidor define, nunca o cliente (input: false).
       privacidadeAceitaEm: { type: "date", required: false, input: false },
+      papel: { type: "string", required: false, input: false, defaultValue: "congressista" },
+      professorId: { type: "string", required: false, input: false },
     },
   },
 
@@ -92,7 +94,16 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user, ctx) => {
-          const body = (ctx?.body ?? {}) as Record<string, unknown>;
+          // Sem contexto de requisição = código do próprio servidor (ex: script
+          // de convite de profissional), que já monta os dados certos.
+          if (!ctx) return { data: user };
+
+          // Por HTTP, a única criação de usuário permitida é o cadastro público.
+          if (ctx.path !== "/sign-up/email") {
+            throw erroValidacao({ message: "Operação não permitida." });
+          }
+
+          const body = (ctx.body ?? {}) as Record<string, unknown>;
           if (body.aceitePrivacidade !== true) {
             throw erroValidacao({
               message: "É preciso aceitar a Política de Privacidade para criar a conta.",
@@ -121,7 +132,14 @@ export const auth = betterAuth({
           }
 
           return {
-            data: { ...user, name: nome, ...dados.data, privacidadeAceitaEm: new Date() },
+            data: {
+              ...user,
+              name: nome,
+              ...dados.data,
+              privacidadeAceitaEm: new Date(),
+              papel: "congressista",
+              professorId: null,
+            },
           };
         },
       },
