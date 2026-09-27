@@ -88,10 +88,9 @@ export default async function Home() {
             </h1>
             <p className="mt-10 font-script text-4xl text-white sm:text-5xl">de cara nova</p>
             <p className="mx-auto mt-4 max-w-xl text-base text-mist/90 sm:text-lg">
-              <strong className="font-semibold text-white">Congresso de zouk</strong> com
-              aulas, professores convidados e muito baile. Venha{" "}
-              <strong className="font-semibold text-white">aprender e/ou melhorar seu zouk</strong>{" "}
-              no LPZ 2027.
+              É um <strong className="font-semibold text-white">congresso de zouk</strong> que
+              tem como foco uma linha de{" "}
+              <strong className="font-semibold text-white">treinamento e prática continuada</strong>.
             </p>
             <a
               href="#ingressos"
