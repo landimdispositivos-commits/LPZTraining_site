@@ -43,7 +43,6 @@ function LinhasDecorativas() {
       fill="none"
       stroke="white"
       strokeWidth="1"
-      vectorEffect="non-scaling-stroke"
     >
       <path d="M-20 520 L120 120 Q140 60 200 60 L420 60" vectorEffect="non-scaling-stroke" />
       <path d="M420 180 L330 180 Q280 180 260 240 L150 560" vectorEffect="non-scaling-stroke" />
