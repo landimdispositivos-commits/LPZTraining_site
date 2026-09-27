@@ -5,7 +5,7 @@ import { nextCookies } from "better-auth/next-js";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { contas, sessoes, usuarios, verificacoes } from "@/db/schema";
-import { emailComLink, enviarEmail } from "@/modules/email";
+import { emailComLink, enviarEmailEmSegundoPlano } from "@/modules/email";
 import { dadosCongressistaSchema, SENHA_MAX, SENHA_MIN } from "./cadastro";
 
 if (!process.env.BETTER_AUTH_SECRET) {
@@ -59,7 +59,7 @@ export const auth = betterAuth({
         textoBotao: "Redefinir senha",
         url,
       });
-      void enviarEmail({ para: user.email, assunto: "Redefinir senha — LPZ Training", texto, html });
+      enviarEmailEmSegundoPlano({ para: user.email, assunto: "Redefinir senha — LPZ Training", texto, html });
     },
     // Cadastro com e-mail já existente responde "sucesso" (não revela quem
     // tem conta); o dono do e-mail é avisado por aqui.
@@ -70,7 +70,7 @@ export const auth = betterAuth({
         textoBotao: "Entrar ou recuperar senha",
         url: `${process.env.APP_URL}/congressistas`,
       });
-      void enviarEmail({ para: user.email, assunto: "Você já tem conta — LPZ Training", texto, html });
+      enviarEmailEmSegundoPlano({ para: user.email, assunto: "Você já tem conta — LPZ Training", texto, html });
     },
   },
 
@@ -86,7 +86,7 @@ export const auth = betterAuth({
         textoBotao: "Confirmar e-mail",
         url,
       });
-      void enviarEmail({ para: user.email, assunto: "Confirme seu e-mail — LPZ Training", texto, html });
+      enviarEmailEmSegundoPlano({ para: user.email, assunto: "Confirme seu e-mail — LPZ Training", texto, html });
     },
   },
 
